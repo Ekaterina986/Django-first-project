@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpRespons
 
 DATA = {
     'omlet': {
@@ -18,6 +19,18 @@ DATA = {
     },
     # можете добавить свои рецепты ;)
 }
+
+
+def data_html(request):
+    context = DATA
+    result = render(request, './calculator/index.html', context)
+    return result
+
+def counter(request, a):
+    for recipe in DATA:
+        context = recipe
+    result = a * context.values()
+    return HttpRespons(f'count = {result}')
 
 # Напишите ваш обработчик. Используйте DATA как источник данных
 # Результат - render(request, 'calculator/index.html', context)

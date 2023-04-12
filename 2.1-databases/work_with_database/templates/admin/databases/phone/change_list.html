@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% extends 'admin/change_list.html' %}
+{% load static %}
+
+{% block object-tools-items %}
+<li>
+    <a href="csv-upload/" class="addlink">
+      Импорт
+    </a>
+</li>
+{{ block.super }}
+{% endblock %}
+</body>
+</html>

@@ -15,7 +15,10 @@ Including another URLconf
 """
 
 from django.urls import path
+from django.views import data_html, caunter
 
 urlpatterns = [
     # здесь зарегистрируйте вашу view-функцию
+    path('data_html/', data_html),
+    path('caunter/ <int: a>/', caunter),
 ]
