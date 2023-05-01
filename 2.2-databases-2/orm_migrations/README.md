@@ -73,4 +73,5 @@ python manage.py loaddata school.json
 
 ```bash
 python manage.py runserver
+
 ```
