@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from advertisements.models import Advertisement
+from .models import Advertisement
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -22,8 +22,9 @@ class AdvertisementSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Advertisement
-        fields = ('id', 'title', 'description', 'creator',
-                  'status', 'created_at', )
+        fields = ['id', 'title', 'description', 'creator',
+                  'status', 'created_at', 'updated_at',]
+        read_only_fields = ['creator',]
 
     def create(self, validated_data):
         """Метод для создания"""
