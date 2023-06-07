@@ -30,7 +30,7 @@ def course_factory():
 @pytest.mark.django_db
 def test_retrieve(client, course_factory):
     courses = course_factory()
-    response = client.get('api/v1/')
+    response = client.get('api/v1/courses/course.id')
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 1
@@ -38,7 +38,7 @@ def test_retrieve(client, course_factory):
 
 def test_list(client, course_factory):
     courses = course_factory(_quantity=100)
-    response = client.get('api/v1/')
+    response = client.get('api/v1/courses/')
     assert response.status_code == 200
     data = response.json()
     assert len(data) == len(courses)
@@ -68,14 +68,14 @@ def test_filter_name(client, course_factory):
 def test_create(client, course_factory):
     courses = course_factory()
     count = Course.objects.count()
-    response = client.post('api/v1/', data={'name'="test_course", 'student' = student.id}, format = 'json')
+    response = client.post('api/v1/courses/', data={'name'="test_course", 'student' = student.id}, format = 'json')
     assert response.status_code == 201
     assert Course.objects.count() == count + 1
 
 
 def test_update(client, course_factory):
     courses = course_factory()
-    response = client.patch('api/v1/', data={'name' = "test_course1", }, format = 'json')
+    response = client.patch('api/v1/courses/course.id', data={'name' = "test_course1", }, format = 'json')
     assert response.status_code == 200
     assert data[0].['name'] == 'test_course1'
 
@@ -83,7 +83,7 @@ def test_update(client, course_factory):
 def delete(client, course_factory):
     courses = course_factory()
     count = Course.objects.count()
-    response = client.delete('api/v1/', data={'id' = course.id, }, format = 'json')
+    response = client.delete('api/v1/courses/course.id', data={'id' = course.id, }, format = 'json')
     assert response.status_code == 204
     assert Course.objects.count() == count - 1
 
