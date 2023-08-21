@@ -10,6 +10,6 @@ class Phone(models.Model):
     slug = models.SlugField(max_length=50, unique=True, db_index=True, verbose_name='name')
 
 
-class PhoneImport(models.Model):
-    csv_file = models.FileField(upload_to='uploads/')
-    date_added = models.DateTimeField(auto_now_add=True)
+# class PhoneImport(models.Model):
+#     csv_file = models.FileField(upload_to='uploads/')
+#     date_added = models.DateTimeField(auto_now_add=True)

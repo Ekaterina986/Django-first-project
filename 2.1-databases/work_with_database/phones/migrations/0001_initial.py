@@ -23,12 +23,5 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(unique=True, verbose_name='name')),
             ],
         ),
-        migrations.CreateModel(
-            name='PhoneImport',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('csv_file', models.FileField(upload_to='uploads/')),
-                ('date_added', models.DateTimeField(auto_now_add=True)),
-            ],
-        ),
+
     ]

@@ -17,7 +17,7 @@ class PhoneAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
-        urls.insert(-1, path('csv-upload/', self.upload_csv))
+        # urls.insert(-1, path('csv-upload/', self.upload_csv))
         return urls
 
 

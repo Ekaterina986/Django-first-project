@@ -21,24 +21,14 @@ class Command(BaseCommand):
             phones = list(csv.DictReader(file, delimiter=';'))
 
         for phone in phones:
-            if request.method == 'POST':
-                form = PhoneImportForm(request.POST, request.FILES)
-                if form.is_valid():
-                    form_object = form.save()
-                    with form_object.csv_file.open('r') as csv_file:
-                        rows = csv.reader(csv_file, delimiter=';')
-                        if next(rows) != ['name', 'author', 'publish_date']:
-                            messages.warning(request, 'Неверные заголовки у файла')
-                            return HttpResponseRedirect(request.path_info)
-                        for row in rows:
-                            print(row[2])
-                            Phone.objects.update_or_create(
-                                name=row[0],
-                                author=row[1],
-                                publish_date=row[2]
-                            )
-                    url = reverse('admin:index')
-                    messages.success(request, 'Файл успешно импортирован')
-                    return HttpResponseRedirect(url)
-            form = PhoneImportForm()
-            return render(request, 'admin/csv_import_page.html', {'form': form})
+            print(phone)
+            Phone.objects.update_or_create(
+                id=phone['id'],
+                price=phone['price'],
+                name=phone['name'],
+                image=phone['image'],
+                release_date=phone['release_date'],
+                lte_exists=phone['lte_exists'],
+                slug=phone['name'],
+            )
+        return 'ok'
