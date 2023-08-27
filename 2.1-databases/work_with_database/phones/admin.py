@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Phone, PhoneImport
+from .models import Phone
 import csv
-from .forms import PhoneImportForm
+
 from django.urls import path
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -22,6 +22,6 @@ class PhoneAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(PhoneImport)
-class PhoneImportAdmin(admin.ModelAdmin):
-    list_import = ('csv_file', 'date_add',)
+# @admin.register(PhoneImport)
+# class PhoneImportAdmin(admin.ModelAdmin):
+#     list_import = ('csv_file', 'date_add',)
