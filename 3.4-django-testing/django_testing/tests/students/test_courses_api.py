@@ -1,11 +1,11 @@
 import pytest
 from rest_framework.test import APIClient
-from students.model import Course, Student
+from students.models import Course, Student
 from model_bakery import baker
 
 
-def test_example():
-    assert False, "Just test example"
+# def test_example():
+    # assert False, "Just test example"
 
 @pytest.fixture
 def client():
@@ -29,12 +29,13 @@ def course_factory():
 
 @pytest.mark.django_db
 def test_retrieve(client, course_factory):
-    courses = course_factory()
-    response = client.get('api/v1/courses/course.id')
+    course = course_factory()
+    response = client.get('api/v1/courses/{course.id}')
+    print(response.status_code)
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 1
-    assert data[0].['name'] == courses[0].name
+    assert data[0]['name'] == courses[0].name
 
 def test_list(client, course_factory):
     courses = course_factory(_quantity=100)
@@ -75,7 +76,7 @@ def test_create(client, course_factory):
 
 def test_update(client, course_factory):
     courses = course_factory()
-    response = client.patch('api/v1/courses/course.id', data={'name' = "test_course1", }, format = 'json')
+    response = client.patch('api/v1/courses/{course.id}', data={'name' = "test_course1", }, format = 'json')
     assert response.status_code == 200
     assert data[0].['name'] == 'test_course1'
 
@@ -83,7 +84,7 @@ def test_update(client, course_factory):
 def delete(client, course_factory):
     courses = course_factory()
     count = Course.objects.count()
-    response = client.delete('api/v1/courses/course.id', data={'id' = course.id, }, format = 'json')
+    response = client.delete('api/v1/courses/{course.id}', data={'id' = course.id, }, format = 'json')
     assert response.status_code == 204
     assert Course.objects.count() == count - 1
 
