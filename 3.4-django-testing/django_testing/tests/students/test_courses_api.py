@@ -26,65 +26,91 @@ def course_factory():
     return course
 
 
-
+# cd ~/python_большой_курс/Django/dj-homeworks/3.4-django-testing/django_testing
+# pytest -s
 @pytest.mark.django_db
 def test_retrieve(client, course_factory):
     course = course_factory()
-    response = client.get(f'api/v1/courses/{course.id}')
-    print(response.status_code)
+    response = client.get('/api/v1/courses/')
     assert response.status_code == 200
-    data = response.json()
-    assert len(data) == 1
-    assert data[0]['name'] == courses[0].name
+    response_courses = response.json()
+    assert len(response_courses) == 1
+    assert response_courses[0]['id'] == course.id
+    assert response_courses[0]['name'] == course.name
 
+
+@pytest.mark.django_db
 def test_list(client, course_factory):
     courses = course_factory(_quantity=100)
-    response = client.get('api/v1/courses/')
+    response = client.get('/api/v1/courses/')
     assert response.status_code == 200
-    data = response.json()
-    assert len(data) == len(courses)
-    for i, c in enumerate(data):
-        assert c['name'] == courses[i].name
+    response_courses = response.json()
+    assert len(response_courses) == len(courses)
+    for key, response_course in enumerate(response_courses):
+        # Порядок элементов может не совпадать
+        # assert c['name'] == courses[key].name
+        find_course = [course_item for course_item in courses if course_item.id == response_course['id']]
+        assert len(find_course) == 1
+        assert find_course[0].name == response_course['name']
 
 
+@pytest.mark.django_db
 def test_filter_id(client, course_factory):
     courses = course_factory(_quantity=100)
-    response = client.object.filter(id = courses.id)
-    data = response.json()
+    for key, course in enumerate(courses):
+        response = client.get('/api/v1/courses/', {"id": course.id})
+        assert response.status_code == 200
+        response_courses = response.json()
+        assert len(response_courses) == 1
+        assert response_courses[0]['id'] == course.id
+        assert response_courses[0]['name'] == course.name
 
-    assert response.status_code == 200
-    for i, c in enumerate(data):
-        assert c['id'] == courses[i].id
 
+@pytest.mark.django_db
 def test_filter_name(client, course_factory):
-    courses = course_factory(_quantity=100)
-    response = client.object.filter(name = courses.name)
-    data = response.json()
+     courses = course_factory(_quantity=100)
+     for key, course in enumerate(courses):
+         response = client.get('/api/v1/courses/', {"name": course.name})
+         assert response.status_code == 200
+         response_courses = response.json()
+         # Может быть несколько записей с одинаковым названием
+         assert len(response_courses) >= 1
+         for key, response_course in enumerate(response_courses):
+            assert response_course['name'] == course.name
 
-    assert response.status_code == 200
-    for i, c in enumerate(data):
-        assert c['name'] == courses[i].name
 
-
-def test_create(client, course_factory):
-    courses = course_factory()
+@pytest.mark.django_db
+def test_create(client):
+    name = "test_course"
     count = Course.objects.count()
-    response = client.post('api/v1/courses/', data={'name'="test_course", 'student' = student.id}, format = 'json')
+    response = client.post('/api/v1/courses/', {'name':name},'json')
     assert response.status_code == 201
+    response_courses = response.json()
     assert Course.objects.count() == count + 1
+    course_db = Course.objects.get(id = response_courses['id'])
+    assert course_db.id == response_courses['id']
+    assert course_db.name == name
 
 
+@pytest.mark.django_db
 def test_update(client, course_factory):
-    courses = course_factory()
-    response = client.patch(f'api/v1/courses/{course.id}', data={'name' = "test_course1", }, format = 'json')
-    assert response.status_code == 200
-    assert data[0].['name'] == 'test_course1'
+    name = "test_course_update"
+    courses = course_factory(_quantity=100)
+    id = courses[0].id
+    response = client.patch('/api/v1/courses/', {'name':name, 'id':id},'json')
+    assert response.status_code == 204
+    course_db = Course.objects.get(id = id)
+    assert course_db.name == name
 
 
-def delete(client, course_factory):
-    courses = course_factory()
+@pytest.mark.django_db
+def test_delete(client, course_factory):
+    courses = course_factory(_quantity=100)
     count = Course.objects.count()
-    response = client.delete(f'api/v1/courses/{course.id}', data={'id' = course.id, }, format = 'json')
+    id = courses[0].id
+    response = client.delete('/api/v1/courses/', {'id': id}, 'json')
     assert response.status_code == 204
     assert Course.objects.count() == count - 1
+    course_db = Course.objects.filter(id=id).first()
+    assert course_db is None
 
