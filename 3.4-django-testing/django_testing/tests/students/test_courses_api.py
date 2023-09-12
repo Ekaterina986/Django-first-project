@@ -31,12 +31,11 @@ def course_factory():
 @pytest.mark.django_db
 def test_retrieve(client, course_factory):
     course = course_factory()
-    response = client.get(f'api/v1/courses/{course.id}')
+    response = client.get(f'/api/v1/courses/{course.id}')
     assert response.status_code == 200
-    response_courses = response.json()
-    assert len(response_courses) == 1
-    assert response_courses[0]['id'] == course.id
-    assert response_courses[0]['name'] == course.name
+    response_course = response.json()
+    assert response_course['id'] == course.id
+    assert response_course['name'] == course.name
 
 
 @pytest.mark.django_db
@@ -96,10 +95,10 @@ def test_create(client):
 def test_update(client, course_factory):
     name = "test_course_update"
     courses = course_factory(_quantity=100)
-    id = courses[0].id
-    response = client.patch(f'/api/v1/courses/{course.id}', {'name':name, 'id':id},'json')
+    course = courses[0]
+    response = client.patch(f'/api/v1/courses/{course.id}', {'name':name},'json')
     assert response.status_code == 204
-    course_db = Course.objects.get(id = id)
+    course_db = Course.objects.get(id = course.id)
     assert course_db.name == name
 
 
@@ -107,10 +106,10 @@ def test_update(client, course_factory):
 def test_delete(client, course_factory):
     courses = course_factory(_quantity=100)
     count = Course.objects.count()
-    id = courses[0].id
-    response = client.delete(f'api/v1/courses/{course.id}', {'id': id}, 'json')
+    course = courses[0]
+    response = client.delete(f'api/v1/courses/{course.id}', 'json')
     assert response.status_code == 204
     assert Course.objects.count() == count - 1
-    course_db = Course.objects.filter(id=id).first()
+    course_db = Course.objects.filter(id = course.id).first()
     assert course_db is None
 
